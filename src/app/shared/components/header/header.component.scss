@@ -1,0 +1,236 @@
+$hsbc-red: #DB0011;
+$hsbc-white: #FFFFFF;
+$hsbc-black: #333333;
+$hsbc-dark-gray: #575757;
+$hsbc-light-gray: #D7D8D6;
+$hsbc-pale-gray: #F3F3F3;
+
+.hsbc-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+  padding: 0 24px;
+  background: $hsbc-white;
+  border-bottom: 3px solid $hsbc-red;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.menu-toggle {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 4px;
+  color: $hsbc-dark-gray;
+  display: flex;
+  align-items: center;
+
+  &:hover {
+    background: $hsbc-pale-gray;
+  }
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  text-decoration: none;
+
+  .logo-svg {
+    height: 32px;
+    width: 120px;
+  }
+
+  .app-title {
+    font-size: 1rem;
+    font-weight: 400;
+    color: $hsbc-dark-gray;
+    padding-left: 12px;
+    border-left: 1px solid $hsbc-light-gray;
+  }
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.icon-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 50%;
+  color: $hsbc-dark-gray;
+  display: flex;
+  align-items: center;
+
+  &:hover {
+    background: $hsbc-pale-gray;
+  }
+}
+
+.notification-wrapper {
+  position: relative;
+}
+
+.notifications-panel {
+  position: absolute;
+  top: 48px;
+  right: 0;
+  width: 380px;
+  background: $hsbc-white;
+  border-radius: 8px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+  z-index: 1001;
+  overflow: hidden;
+
+  .panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    border-bottom: 1px solid $hsbc-light-gray;
+
+    h4 {
+      margin: 0;
+      font-weight: 500;
+    }
+
+    .btn-text {
+      background: none;
+      border: none;
+      color: $hsbc-red;
+      cursor: pointer;
+      font-size: 0.85rem;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+
+  .panel-body {
+    max-height: 400px;
+    overflow-y: auto;
+  }
+
+  .notification-item {
+    display: flex;
+    gap: 12px;
+    padding: 14px 20px;
+    border-bottom: 1px solid $hsbc-pale-gray;
+    transition: background 0.2s;
+
+    &:hover {
+      background: $hsbc-pale-gray;
+    }
+
+    &.unread {
+      background: rgba($hsbc-red, 0.02);
+      border-left: 3px solid $hsbc-red;
+    }
+
+    .notif-icon {
+      font-size: 20px;
+      margin-top: 2px;
+
+      &.success { color: #00847F; }
+      &.error { color: $hsbc-red; }
+      &.warning { color: #F2A900; }
+      &.info { color: #0073CF; }
+    }
+
+    .notif-content {
+      flex: 1;
+
+      strong {
+        font-size: 0.9rem;
+        display: block;
+        margin-bottom: 4px;
+      }
+
+      p {
+        font-size: 0.8rem;
+        color: $hsbc-dark-gray;
+        margin: 0;
+        line-height: 1.4;
+      }
+
+      .notif-time {
+        font-size: 0.75rem;
+        color: #767676;
+        margin-top: 4px;
+        display: block;
+      }
+    }
+  }
+}
+
+.user-menu {
+  .user-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 6px 12px;
+    border-radius: 8px;
+    transition: background 0.2s;
+
+    &:hover {
+      background: $hsbc-pale-gray;
+    }
+  }
+
+  .user-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: $hsbc-red;
+    color: $hsbc-white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    font-weight: 500;
+  }
+
+  .user-info {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+
+    .user-name {
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: $hsbc-black;
+    }
+
+    .user-role {
+      font-size: 0.7rem;
+      color: #767676;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .app-title { display: none; }
+  .user-info { display: none; }
+  .notifications-panel { width: 320px; right: -40px; }
+}

@@ -1,0 +1,36 @@
+.app-layout {
+  min-height: 100vh;
+}
+
+.main-content {
+  margin-left: 260px;
+  margin-top: 64px;
+  min-height: calc(100vh - 64px);
+  display: flex;
+  flex-direction: column;
+  transition: margin-left 0.3s ease;
+  background: #F3F3F3;
+
+  &.sidebar-collapsed {
+    margin-left: 72px;
+  }
+}
+
+.page-wrapper {
+  flex: 1;
+  padding: 32px;
+}
+
+@media (max-width: 768px) {
+  .main-content {
+    margin-left: 72px;
+
+    &.sidebar-collapsed {
+      margin-left: 72px;
+    }
+  }
+
+  .page-wrapper {
+    padding: 20px 16px;
+  }
+}

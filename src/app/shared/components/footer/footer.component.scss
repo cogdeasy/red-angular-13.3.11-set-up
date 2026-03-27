@@ -1,0 +1,55 @@
+$hsbc-red: #DB0011;
+$hsbc-black: #333333;
+$hsbc-dark-gray: #575757;
+$hsbc-medium-gray: #767676;
+$hsbc-light-gray: #D7D8D6;
+$hsbc-pale-gray: #F3F3F3;
+$hsbc-white: #FFFFFF;
+
+.hsbc-footer {
+  background: $hsbc-white;
+  border-top: 1px solid $hsbc-light-gray;
+  padding: 24px;
+  margin-top: auto;
+}
+
+.footer-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.footer-links {
+  margin-bottom: 16px;
+
+  a {
+    color: $hsbc-dark-gray;
+    font-size: 0.8rem;
+    text-decoration: none;
+    transition: color 0.2s;
+
+    &:hover {
+      color: $hsbc-red;
+      text-decoration: underline;
+    }
+  }
+
+  .divider {
+    margin: 0 12px;
+    color: $hsbc-light-gray;
+    font-size: 0.8rem;
+  }
+}
+
+.footer-info {
+  p {
+    font-size: 0.75rem;
+    color: $hsbc-medium-gray;
+    margin: 0 0 4px;
+  }
+
+  .disclaimer {
+    font-size: 0.7rem;
+    color: $hsbc-light-gray;
+  }
+}

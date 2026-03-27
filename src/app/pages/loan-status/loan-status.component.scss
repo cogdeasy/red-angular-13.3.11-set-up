@@ -1,0 +1,345 @@
+$hsbc-red: #DB0011;
+$hsbc-success: #00847F;
+$hsbc-warning: #F2A900;
+$hsbc-info: #0073CF;
+$hsbc-black: #333333;
+$hsbc-dark-gray: #575757;
+$hsbc-medium-gray: #767676;
+$hsbc-light-gray: #D7D8D6;
+$hsbc-pale-gray: #F3F3F3;
+$hsbc-white: #FFFFFF;
+
+.loan-status-page {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24px;
+
+  h1 { font-size: 1.8rem; font-weight: 300; margin-bottom: 4px; }
+  p { color: $hsbc-medium-gray; margin: 0; }
+}
+
+// Filters
+.filters-bar {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 16px 20px;
+  margin-bottom: 24px;
+}
+
+.filter-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  max-width: 350px;
+
+  .search-icon { color: $hsbc-medium-gray; }
+
+  .search-input {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-size: 0.9rem;
+    font-family: inherit;
+    color: $hsbc-black;
+    background: transparent;
+
+    &::placeholder { color: $hsbc-light-gray; }
+  }
+}
+
+.filter-tabs {
+  display: flex;
+  gap: 4px;
+}
+
+.filter-tab {
+  padding: 6px 14px;
+  border: 1px solid $hsbc-light-gray;
+  border-radius: 20px;
+  background: transparent;
+  color: $hsbc-dark-gray;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: inherit;
+  white-space: nowrap;
+
+  &:hover { border-color: $hsbc-red; color: $hsbc-red; }
+
+  &.active {
+    background: $hsbc-red;
+    color: $hsbc-white;
+    border-color: $hsbc-red;
+  }
+}
+
+// Empty State
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+
+  mat-icon {
+    font-size: 56px;
+    height: 56px;
+    width: 56px;
+    color: $hsbc-light-gray;
+    margin-bottom: 16px;
+  }
+
+  h3 { font-weight: 400; color: $hsbc-dark-gray; }
+  p { color: $hsbc-medium-gray; }
+}
+
+// Loan Cards
+.loans-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.loan-card {
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover { box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08); }
+
+  &.expanded {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    border-left: 4px solid $hsbc-red;
+  }
+}
+
+.loan-card-main {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.loan-icon-wrap {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  background: rgba($hsbc-red, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  mat-icon { color: $hsbc-red; }
+}
+
+.loan-info {
+  flex: 1;
+  min-width: 0;
+
+  .loan-top-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 4px;
+
+    h4 { margin: 0; font-weight: 500; font-size: 1rem; }
+  }
+
+  .loan-id {
+    font-size: 0.8rem;
+    color: $hsbc-medium-gray;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+.loan-amounts {
+  display: flex;
+  gap: 32px;
+  flex-shrink: 0;
+
+  .amount-item {
+    text-align: right;
+
+    .amount-label {
+      display: block;
+      font-size: 0.7rem;
+      color: $hsbc-medium-gray;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    .amount-value {
+      display: block;
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: $hsbc-black;
+    }
+  }
+}
+
+.expand-icon {
+  color: $hsbc-medium-gray;
+  flex-shrink: 0;
+}
+
+// Expanded Details
+.loan-details {
+  padding-top: 20px;
+  margin-top: 20px;
+  border-top: 1px solid $hsbc-pale-gray;
+}
+
+.details-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+  margin-bottom: 24px;
+}
+
+.detail-section {
+  h5 {
+    font-size: 0.85rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: $hsbc-medium-gray;
+    margin-bottom: 12px;
+  }
+
+  .detail-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid $hsbc-pale-gray;
+    font-size: 0.9rem;
+
+    span { color: $hsbc-dark-gray; }
+    strong { color: $hsbc-black; }
+  }
+}
+
+.progress-inline {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.progress-bar-sm {
+  width: 80px;
+  height: 5px;
+  background: $hsbc-pale-gray;
+  border-radius: 3px;
+  overflow: hidden;
+
+  .progress-fill-sm {
+    height: 100%;
+    background: $hsbc-success;
+    border-radius: 3px;
+  }
+}
+
+// Timeline
+.timeline-section {
+  h5 {
+    font-size: 0.85rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: $hsbc-medium-gray;
+    margin-bottom: 16px;
+  }
+}
+
+.timeline {
+  display: flex;
+  gap: 0;
+}
+
+.timeline-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  position: relative;
+
+  .timeline-dot {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 2px solid $hsbc-light-gray;
+    background: $hsbc-white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1;
+
+    mat-icon { font-size: 16px; height: 16px; width: 16px; color: $hsbc-white; }
+  }
+
+  .timeline-content {
+    text-align: center;
+    margin-top: 8px;
+
+    .timeline-label {
+      display: block;
+      font-size: 0.8rem;
+      color: $hsbc-medium-gray;
+    }
+
+    .timeline-date {
+      display: block;
+      font-size: 0.7rem;
+      color: $hsbc-light-gray;
+      margin-top: 2px;
+    }
+  }
+
+  .timeline-line {
+    position: absolute;
+    top: 16px;
+    left: calc(50% + 20px);
+    width: calc(100% - 40px);
+    height: 2px;
+    background: $hsbc-light-gray;
+  }
+
+  &.completed {
+    .timeline-dot {
+      border-color: $hsbc-success;
+      background: $hsbc-success;
+    }
+    .timeline-label { color: $hsbc-success; }
+    .timeline-line { background: $hsbc-success; }
+  }
+
+  &.active {
+    .timeline-dot {
+      border-color: $hsbc-red;
+      background: rgba($hsbc-red, 0.1);
+      box-shadow: 0 0 0 4px rgba($hsbc-red, 0.1);
+    }
+    .timeline-label { color: $hsbc-red; font-weight: 500; }
+  }
+}
+
+.text-success { color: $hsbc-success; }
+
+@media (max-width: 768px) {
+  .page-header { flex-direction: column; gap: 16px; }
+  .filters-bar { flex-direction: column; align-items: stretch; }
+  .filter-group { max-width: none; }
+  .filter-tabs { flex-wrap: wrap; }
+  .loan-card-main { flex-wrap: wrap; }
+  .loan-amounts { flex-wrap: wrap; gap: 16px; }
+  .details-grid { grid-template-columns: 1fr; }
+  .timeline { flex-direction: column; gap: 16px; }
+  .timeline-step .timeline-line { display: none; }
+}

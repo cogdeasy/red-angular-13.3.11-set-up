@@ -1,0 +1,149 @@
+<div class="loan-status-page fade-in">
+  <div class="page-header">
+    <div>
+      <h1>My Loans</h1>
+      <p>Track and manage all your loan applications and active loans.</p>
+    </div>
+    <a routerLink="/loan-application" class="btn btn-primary">
+      <mat-icon>add</mat-icon> New Application
+    </a>
+  </div>
+
+  <!-- Filters -->
+  <div class="filters-bar card">
+    <div class="filter-group">
+      <mat-icon class="search-icon">search</mat-icon>
+      <input type="text" class="search-input" placeholder="Search by ID, type, or purpose..."
+             [(ngModel)]="searchQuery" (ngModelChange)="applyFilters()">
+    </div>
+    <div class="filter-tabs">
+      <button *ngFor="let filter of statusFilters"
+              class="filter-tab"
+              [class.active]="filterStatus === filter.value"
+              (click)="filterStatus = filter.value; applyFilters()">
+        {{ filter.label }}
+      </button>
+    </div>
+  </div>
+
+  <app-loading-spinner [isLoading]="isLoading" message="Loading your loans..."></app-loading-spinner>
+
+  <div *ngIf="!isLoading">
+    <!-- Empty State -->
+    <div *ngIf="filteredLoans.length === 0" class="card empty-state">
+      <mat-icon>inbox</mat-icon>
+      <h3>No loans found</h3>
+      <p>{{ searchQuery || filterStatus !== 'all' ? 'Try adjusting your filters.' : 'You haven\'t applied for any loans yet.' }}</p>
+      <a routerLink="/loan-application" class="btn btn-primary" *ngIf="!searchQuery && filterStatus === 'all'">Apply Now</a>
+    </div>
+
+    <!-- Loan Cards -->
+    <div class="loans-list">
+      <div *ngFor="let loan of filteredLoans" class="loan-card card"
+           [class.expanded]="selectedLoan?.id === loan.id"
+           (click)="selectLoan(loan)">
+
+        <div class="loan-card-main">
+          <div class="loan-icon-wrap">
+            <mat-icon>{{ getStatusIcon(loan.status) }}</mat-icon>
+          </div>
+
+          <div class="loan-info">
+            <div class="loan-top-row">
+              <h4>{{ loan.type }}</h4>
+              <span class="badge" [ngClass]="getStatusClass(loan.status)">{{ loan.status }}</span>
+            </div>
+            <p class="loan-id">{{ loan.id }} &middot; {{ loan.purpose }}</p>
+          </div>
+
+          <div class="loan-amounts">
+            <div class="amount-item">
+              <span class="amount-label">Amount</span>
+              <span class="amount-value">{{ formatCurrency(loan.amount) }}</span>
+            </div>
+            <div class="amount-item">
+              <span class="amount-label">Monthly</span>
+              <span class="amount-value">{{ formatCurrency(loan.monthlyPayment) }}</span>
+            </div>
+            <div class="amount-item">
+              <span class="amount-label">Rate</span>
+              <span class="amount-value">{{ loan.interestRate }}%</span>
+            </div>
+          </div>
+
+          <mat-icon class="expand-icon">{{ selectedLoan?.id === loan.id ? 'expand_less' : 'expand_more' }}</mat-icon>
+        </div>
+
+        <!-- Expanded Details -->
+        <div class="loan-details" *ngIf="selectedLoan?.id === loan.id" (click)="$event.stopPropagation()">
+          <div class="details-grid">
+            <div class="detail-section">
+              <h5>Loan Information</h5>
+              <div class="detail-row">
+                <span>Application Date</span>
+                <strong>{{ loan.applicationDate }}</strong>
+              </div>
+              <div class="detail-row" *ngIf="loan.approvalDate">
+                <span>Approval Date</span>
+                <strong>{{ loan.approvalDate }}</strong>
+              </div>
+              <div class="detail-row">
+                <span>Term</span>
+                <strong>{{ loan.term }} months</strong>
+              </div>
+              <div class="detail-row">
+                <span>Interest Rate</span>
+                <strong>{{ loan.interestRate }}% APR</strong>
+              </div>
+            </div>
+
+            <div class="detail-section">
+              <h5>Payment Summary</h5>
+              <div class="detail-row">
+                <span>Remaining Balance</span>
+                <strong>{{ formatCurrency(loan.remainingBalance) }}</strong>
+              </div>
+              <div class="detail-row">
+                <span>Total Paid</span>
+                <strong class="text-success">{{ formatCurrency(loan.totalPaid) }}</strong>
+              </div>
+              <div class="detail-row">
+                <span>Next Payment Due</span>
+                <strong>{{ loan.nextPaymentDate }}</strong>
+              </div>
+              <div class="detail-row" *ngIf="loan.totalPaid > 0">
+                <span>Repayment Progress</span>
+                <div class="progress-inline">
+                  <div class="progress-bar-sm">
+                    <div class="progress-fill-sm" [style.width.%]="getProgressPercent(loan)"></div>
+                  </div>
+                  <strong>{{ getProgressPercent(loan) }}%</strong>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Timeline -->
+          <div class="timeline-section">
+            <h5>Application Timeline</h5>
+            <div class="timeline">
+              <div *ngFor="let step of getTimelineSteps(loan); let last = last"
+                   class="timeline-step"
+                   [class.completed]="step.completed"
+                   [class.active]="step.active">
+                <div class="timeline-dot">
+                  <mat-icon *ngIf="step.completed">check</mat-icon>
+                </div>
+                <div class="timeline-content">
+                  <span class="timeline-label">{{ step.label }}</span>
+                  <span class="timeline-date" *ngIf="step.date">{{ step.date }}</span>
+                </div>
+                <div class="timeline-line" *ngIf="!last"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

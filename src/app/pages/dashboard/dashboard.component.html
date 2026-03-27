@@ -1,0 +1,125 @@
+<div class="dashboard-page fade-in">
+  <div class="page-header">
+    <div>
+      <h1>Welcome back, {{ currentUser?.firstName }}</h1>
+      <p class="subtitle">Here's an overview of your loans and financial activity.</p>
+    </div>
+    <a routerLink="/loan-application" class="btn btn-primary">
+      <mat-icon>add</mat-icon> Apply for a Loan
+    </a>
+  </div>
+
+  <app-loading-spinner [isLoading]="isLoading" message="Loading your dashboard..."></app-loading-spinner>
+
+  <div *ngIf="!isLoading && stats">
+    <!-- Stats Cards -->
+    <div class="stats-grid">
+      <div class="stat-card card card-accent">
+        <div class="stat-icon-wrap blue">
+          <mat-icon>account_balance</mat-icon>
+        </div>
+        <div class="stat-content">
+          <span class="stat-label">Total Borrowed</span>
+          <span class="stat-value">{{ formatCurrency(stats.totalBorrowed) }}</span>
+          <span class="stat-meta">{{ stats.totalLoans }} total loans</span>
+        </div>
+      </div>
+
+      <div class="stat-card card card-accent">
+        <div class="stat-icon-wrap green">
+          <mat-icon>payments</mat-icon>
+        </div>
+        <div class="stat-content">
+          <span class="stat-label">Total Paid</span>
+          <span class="stat-value">{{ formatCurrency(stats.totalPaid) }}</span>
+          <span class="stat-meta text-success">On track with payments</span>
+        </div>
+      </div>
+
+      <div class="stat-card card card-accent">
+        <div class="stat-icon-wrap orange">
+          <mat-icon>event</mat-icon>
+        </div>
+        <div class="stat-content">
+          <span class="stat-label">Next Payment</span>
+          <span class="stat-value">{{ formatCurrency(stats.nextPayment) }}</span>
+          <span class="stat-meta">Due {{ stats.nextPaymentDate }}</span>
+        </div>
+      </div>
+
+      <div class="stat-card card card-accent">
+        <div class="stat-icon-wrap purple">
+          <mat-icon>trending_up</mat-icon>
+        </div>
+        <div class="stat-content">
+          <span class="stat-label">Credit Score</span>
+          <span class="stat-value">{{ stats.creditScore }}</span>
+          <span class="stat-meta text-success">+{{ stats.creditScoreChange }} this month</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="section-header">
+      <h2>Quick Actions</h2>
+    </div>
+    <div class="quick-actions">
+      <a routerLink="/loan-application" class="action-card card">
+        <mat-icon class="action-icon">description</mat-icon>
+        <h4>New Application</h4>
+        <p>Apply for a personal, mortgage, or business loan</p>
+      </a>
+      <a routerLink="/loan-calculator" class="action-card card">
+        <mat-icon class="action-icon">calculate</mat-icon>
+        <h4>Loan Calculator</h4>
+        <p>Estimate your monthly payments and total costs</p>
+      </a>
+      <a routerLink="/loan-status" class="action-card card">
+        <mat-icon class="action-icon">visibility</mat-icon>
+        <h4>Track Applications</h4>
+        <p>View the status of your pending applications</p>
+      </a>
+    </div>
+
+    <!-- Active Loans Table -->
+    <div class="section-header">
+      <h2>Your Loans</h2>
+      <a routerLink="/loan-status" class="btn btn-text">View all</a>
+    </div>
+
+    <div class="table-container">
+      <table class="hsbc-table">
+        <thead>
+          <tr>
+            <th>Loan ID</th>
+            <th>Type</th>
+            <th>Amount</th>
+            <th>Monthly Payment</th>
+            <th>Status</th>
+            <th>Progress</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let loan of recentLoans">
+            <td><strong>{{ loan.id }}</strong></td>
+            <td>{{ loan.type }}</td>
+            <td>{{ formatCurrency(loan.amount) }}</td>
+            <td>{{ formatCurrency(loan.monthlyPayment) }}</td>
+            <td>
+              <span class="badge" [ngClass]="getStatusClass(loan.status)">{{ loan.status }}</span>
+            </td>
+            <td>
+              <div class="progress-cell" *ngIf="loan.totalPaid > 0">
+                <div class="progress-bar">
+                  <div class="progress-fill" [style.width.%]="getProgressPercent(loan)"></div>
+                </div>
+                <span class="progress-text">{{ getProgressPercent(loan) }}%</span>
+              </div>
+              <span *ngIf="loan.totalPaid === 0" class="text-muted text-sm">-</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
