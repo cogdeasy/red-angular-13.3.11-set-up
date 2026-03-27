@@ -1,0 +1,167 @@
+name: "Workflow 4 — Validate Wave Completion"
+description: >
+  Quality gate validation after completing a migration wave.
+  Ensures all routes in the wave meet acceptance criteria before proceeding.
+
+phase: "2-4 — Migration Waves (end of each wave)"
+duration: "2-3 days per wave"
+repeat: true
+
+inputs:
+  wave_number: "(1-5)"
+  migration_tracker: "docs/migration-tracker.md"
+  performance_baseline: "assessment/performance_baseline.md"
+  test_baseline: "assessment/test_baseline.md"
+
+outputs:
+  - "docs/wave-{N}-report.md"
+  - "docs/wave-{N}-regression-report.md"
+  - "docs/wave-{N}-go-nogo-decision.md"
+
+wave_definitions:
+  wave_1:
+    name: "Leaf Pages"
+    routes: ["/login", "/profile"]
+    components: ["LoginComponent", "ProfileComponent"]
+    estimated_effort: "5-7 days"
+    risk: "Low"
+  wave_2:
+    name: "Read-Only Pages"
+    routes: ["/dashboard", "/loan-status"]
+    components: ["DashboardComponent", "LoanStatusComponent"]
+    estimated_effort: "7-10 days"
+    risk: "Medium (forkJoin pattern, filterable list)"
+  wave_3:
+    name: "Interactive Pages"
+    routes: ["/loan-calculator"]
+    components: ["LoanCalculatorComponent"]
+    estimated_effort: "5-7 days"
+    risk: "Medium (two-way binding, SVG chart, amortization)"
+  wave_4:
+    name: "Complex Pages"
+    routes: ["/loan-application"]
+    components: ["LoanApplicationComponent"]
+    estimated_effort: "7-10 days"
+    risk: "High (4-step reactive form wizard, complex validation)"
+  wave_5:
+    name: "Shell & Cleanup"
+    routes: ["(all — shell components)"]
+    components: ["AppComponent", "HeaderComponent", "SidebarComponent", "FooterComponent", "LoadingSpinnerComponent"]
+    estimated_effort: "5-7 days"
+    risk: "Medium (notification panel, sidebar collapse, auth state)"
+
+steps:
+  - id: verify-completeness
+    name: "Verify All Routes Migrated"
+    description: >
+      Check that every route assigned to this wave has been migrated
+      and marked complete in the migration tracker.
+    acceptance_criteria:
+      - All routes in wave have completed Workflow 3
+      - Migration tracker shows 100% for this wave
+      - All PRs merged
+
+  - id: run-unit-tests
+    name: "Run Full Unit Test Suite"
+    description: >
+      Run Vitest for all React components, not just the wave's components.
+    acceptance_criteria:
+      - All unit tests pass
+      - Coverage >= baseline for migrated components
+      - No regressions in previously migrated components
+
+  - id: run-e2e-tests
+    name: "Run E2E Parity Tests"
+    description: >
+      Run Playwright E2E suite against both Angular and React versions.
+    acceptance_criteria:
+      - All E2E tests pass against React
+      - All E2E tests still pass against Angular
+      - No behavioral differences detected
+
+  - id: visual-regression
+    name: "Full Visual Regression Check"
+    description: >
+      Run Chromatic/Percy across all migrated routes.
+    acceptance_criteria:
+      - Zero unintended visual diffs
+      - All intentional changes documented and approved
+      - Desktop, tablet, and mobile viewports checked
+
+  - id: accessibility-audit
+    name: "Full Accessibility Audit"
+    description: >
+      Run axe-core across all migrated routes.
+    acceptance_criteria:
+      - Zero critical violations
+      - Zero serious violations
+      - Keyboard navigation works end-to-end
+      - Screen reader experience verified
+
+  - id: performance-comparison
+    name: "Performance Comparison"
+    description: >
+      Compare React performance against Angular baseline.
+    metrics:
+      - "FCP: Must be <= Angular baseline + 10%"
+      - "LCP: Must be <= Angular baseline + 10%"
+      - "CLS: Must be < 0.1"
+      - "TBT: Must be <= Angular baseline"
+      - "Bundle size: Must be within 15% of Angular"
+    acceptance_criteria:
+      - All Lighthouse metrics meet budgets
+      - Bundle size within tolerance
+      - No performance regressions
+
+  - id: bundle-analysis
+    name: "Bundle Size Analysis"
+    description: >
+      Analyze bundle composition and identify any oversized chunks.
+    acceptance_criteria:
+      - Route-level code splitting working
+      - No single chunk > 250KB (gzipped)
+      - Tree-shaking effective (no unused code)
+      - Bundle size trend documented
+
+  - id: integration-test
+    name: "Cross-Framework Integration Test"
+    description: >
+      Test that Angular and React coexist without issues.
+    acceptance_criteria:
+      - Navigation between Angular and React routes works
+      - Auth state shared correctly
+      - No JavaScript errors in console
+      - No style conflicts
+      - Feature flags toggle correctly
+
+  - id: stakeholder-demo
+    name: "Stakeholder Demo"
+    description: >
+      Demo the migrated routes to stakeholders and collect feedback.
+    acceptance_criteria:
+      - All migrated routes demonstrated
+      - Feedback documented
+      - No blocking issues raised
+      - Sign-off obtained
+
+  - id: go-nogo-decision
+    name: "Go/No-Go Decision"
+    description: >
+      Formal decision on whether to proceed to the next wave.
+    go_criteria:
+      - All unit tests pass
+      - All E2E tests pass
+      - Visual regression approved
+      - Accessibility audit clean
+      - Performance within budgets
+      - Stakeholder sign-off obtained
+      - No critical bugs outstanding
+    nogo_criteria:
+      - Any critical test failure
+      - Performance regression > 15%
+      - Accessibility critical/serious violations
+      - Stakeholder blocking feedback
+    acceptance_criteria:
+      - Decision documented in wave-{N}-go-nogo-decision.md
+      - If GO, next wave can begin
+      - If NOGO, remediation plan created

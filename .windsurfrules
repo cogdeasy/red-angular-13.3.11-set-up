@@ -1,0 +1,180 @@
+# HSBC Loans Portal — Angular 13.3.11 to React 18 Migration Rules
+# ================================================================
+# Source repo: https://github.com/cogdeasy/red-angular-13.3.11
+# Target: React 18.3.x + Vite + TypeScript 5.x
+
+## Project Context
+
+- name: hsbc-loans-portal
+- source_framework: Angular 13.3.11
+- target_framework: React 18.3.x (LTS)
+- coexistence_strategy: single-spa
+- styling: SCSS (HSBC Design System tokens migrated to CSS custom properties)
+- state_management: Zustand (shared/global), TanStack Query (server state)
+- forms: React Hook Form + Zod
+- routing: React Router 6
+- testing: Vitest + React Testing Library + Playwright
+- bundler: Vite 5.x
+- node_version: ">=18.0.0"
+
+## Architecture Rules
+
+### Source Application Structure (READ-ONLY)
+```
+src/app/
+  app.module.ts              # Root NgModule — BrowserModule, HttpClientModule, BrowserAnimationsModule
+  app-routing.module.ts      # 6 lazy-loaded routes + AuthGuard
+  app.component.ts           # Shell: auth check, sidebar toggle, route-aware layout
+  shared/
+    shared.module.ts          # Angular Material modules, shared components, pipes
+    services/
+      auth.service.ts         # BehaviorSubject auth, localStorage persistence
+      loan.service.ts         # Mock CRUD, calculations, amortization
+      notification.service.ts # BehaviorSubject notification system
+    guards/
+      auth.guard.ts           # CanActivate guard
+    models/
+      loan.model.ts           # Loan, LoanType, LoanStatus, LoanApplication, DashboardStats, etc.
+      user.model.ts           # User interface
+    pipes/
+      currency-format.pipe.ts # Custom currency formatter
+    components/
+      header/                 # Navigation, notifications panel, user menu
+      sidebar/                # Collapsible nav with Material icons
+      footer/                 # Static footer
+      loading-spinner/        # Inline template spinner
+  pages/
+    login/                    # Template-driven form, AuthService.login()
+    dashboard/                # Stats cards, quick actions, loans table (forkJoin)
+    loan-application/         # 4-step reactive form wizard (FormBuilder, Validators)
+    loan-calculator/          # Two-way binding, amortization schedule, SVG donut chart
+    loan-status/              # Filterable/searchable loan list, expandable detail cards, timeline
+    profile/                  # View/edit profile, security settings, communication preferences
+```
+
+### Target Application Structure (WRITE)
+```
+src/
+  main.tsx                    # React entry point
+  App.tsx                     # Root component with React Router
+  routes.tsx                  # Route definitions with lazy loading + auth guard
+  providers/
+    AuthProvider.tsx           # React Context replacing AuthService BehaviorSubjects
+    QueryProvider.tsx          # TanStack Query provider
+  hooks/
+    useAuth.ts                # Custom hook wrapping AuthContext
+    useLoans.ts               # TanStack Query hooks for loan operations
+    useNotifications.ts       # Zustand store for notifications
+    useCurrencyFormat.ts      # Replacing CurrencyFormatPipe
+  types/
+    loan.ts                   # Shared TypeScript interfaces/enums (from loan.model.ts)
+    user.ts                   # User interface (from user.model.ts)
+  components/
+    layout/
+      AppShell.tsx            # Replaces app.component.ts shell logic
+      Header.tsx              # Replaces header.component
+      Sidebar.tsx             # Replaces sidebar.component
+      Footer.tsx              # Replaces footer.component
+    ui/
+      LoadingSpinner.tsx      # Replaces loading-spinner.component
+      Badge.tsx               # Status badge component
+  pages/
+    Login.tsx                 # Replaces login.component (React Hook Form + Zod)
+    Dashboard.tsx             # Replaces dashboard.component (TanStack Query)
+    LoanApplication/
+      index.tsx               # Multi-step wizard container
+      PersonalInfoStep.tsx    # Step 1
+      EmploymentStep.tsx      # Step 2
+      LoanDetailsStep.tsx     # Step 3
+      ReviewStep.tsx          # Step 4
+    LoanCalculator.tsx        # Replaces loan-calculator.component
+    LoanStatus.tsx            # Replaces loan-status.component
+    Profile.tsx               # Replaces profile.component
+  styles/
+    tokens.css                # HSBC design tokens as CSS custom properties
+    global.css                # Global styles migrated from styles.scss
+```
+
+## Code Guidelines
+
+### TypeScript
+- strict: true (matching Angular tsconfig)
+- No `any` types — use proper interfaces from types/
+- Prefer `interface` over `type` for object shapes
+- Use `as const` for enum-like objects (or keep TypeScript enums from Angular models)
+
+### React Components
+- Functional components only (no class components)
+- Named exports: `export function DashboardPage() {}`
+- Props interface co-located: `interface DashboardPageProps {}`
+- One component per file
+- File name matches component name (PascalCase)
+
+### Hooks
+- Prefix with `use`: `useAuth`, `useLoans`, `useNotifications`
+- Custom hooks in `src/hooks/`
+- No direct RxJS — translate all BehaviorSubject patterns to useState/useContext/Zustand
+
+### State Management
+- Auth state: React Context + useAuth hook (replaces AuthService BehaviorSubjects)
+- Server data: TanStack Query (replaces LoanService Observable methods)
+- UI state: Component-local useState (replaces component class properties)
+- Notifications: Zustand store (replaces NotificationService BehaviorSubject)
+
+### Forms
+- React Hook Form for all forms
+- Zod schemas for validation (replaces Angular Validators)
+- Loan application wizard: useForm per step with shared form context
+
+### Routing
+- React Router 6 with lazy() for code splitting (replaces loadChildren)
+- Auth guard via wrapper component: `<ProtectedRoute>` (replaces AuthGuard CanActivate)
+- Same URL paths: /login, /dashboard, /loan-application, /loan-calculator, /loan-status, /profile
+
+### Styling
+- Migrate SCSS variables to CSS custom properties (--hsbc-red, --hsbc-success, etc.)
+- Keep HSBC design system intact — same visual output
+- Component-scoped styles via CSS Modules or co-located .scss files
+- Angular Material icons replaced with @mui/icons-material or react-icons/md
+
+### API Calls
+- TanStack Query hooks wrapping fetch/axios
+- Mock service worker (MSW) for development (replaces in-memory mock data in LoanService)
+- Query keys: ['loans'], ['loans', id], ['dashboard-stats'], ['user']
+
+### Imports
+- Absolute imports via path aliases: `@/hooks/useAuth`, `@/types/loan`
+- Group: React → third-party → @/ aliases → relative
+
+## Process Guidelines
+
+### Migration Order (Strangler Fig)
+1. **Wave 1 — Leaf Pages**: Login, Profile (simplest, fewest dependencies)
+2. **Wave 2 — Read-Only Pages**: Dashboard, Loan Status (data display, no complex forms)
+3. **Wave 3 — Interactive Pages**: Loan Calculator (two-way binding, SVG chart)
+4. **Wave 4 — Complex Pages**: Loan Application (multi-step reactive form wizard)
+5. **Wave 5 — Shell & Cleanup**: AppShell, Header, Sidebar, Footer + remove Angular
+
+### Never Modify Angular Source
+- Angular code in red-angular-13.3.11 is READ-ONLY
+- All new features go in React
+- Bug fixes in Angular only if critical and backported to React
+
+### Feature Flags
+- Use feature flags for route-level switching between Angular and React
+- Flag format: `ff_react_{route_name}` (e.g., ff_react_login, ff_react_dashboard)
+- Default: Angular active, React behind flag
+
+### PR Requirements
+- Reference the route/component being migrated
+- Include before/after screenshots
+- Report test coverage delta
+- Report bundle size impact
+- Link to migration tracker row
+
+### Testing Requirements
+- Unit test coverage must match or exceed Angular baseline
+- E2E parity tests: same Playwright spec runs against both Angular and React
+- Lighthouse CI: FCP < 1.8s, LCP < 2.5s, CLS < 0.1
+- axe-core: zero critical/serious accessibility violations
+- Visual regression: Chromatic/Percy snapshots for every migrated component

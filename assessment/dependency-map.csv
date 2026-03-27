@@ -1,0 +1,27 @@
+Package,Version,Category,Action,React Equivalent,Notes
+@angular/animations,13.3.11,Angular Core,Remove,N/A (CSS animations),HSBC uses CSS @keyframes (fadeIn/slideIn) — no Angular animation API usage
+@angular/cdk,13.3.9,Angular Core,Remove,N/A,CDK used implicitly by Material — not directly consumed
+@angular/common,13.3.11,Angular Core,Remove,React (built-in),Directives (*ngIf/*ngFor) and pipes (date/async) replaced by JSX patterns
+@angular/compiler,13.3.11,Angular Core,Remove,N/A,No React equivalent needed
+@angular/core,13.3.11,Angular Core,Remove,react@18.3.x,Core framework replacement
+@angular/forms,13.3.11,Angular Core,Remove,react-hook-form@7.x + zod@3.x,ReactiveFormsModule + FormsModule replaced
+@angular/material,13.3.9,Angular UI,Remove,@mui/icons-material or react-icons/md,Only MatIcon/MatMenu/MatBadge/MatTooltip/MatSpinner/MatDivider used
+@angular/platform-browser,13.3.11,Angular Core,Remove,react-dom@18.3.x,Platform replacement
+@angular/platform-browser-dynamic,13.3.11,Angular Core,Remove,N/A,Bootstrap mechanism — React uses createRoot
+@angular/router,13.3.11,Angular Core,Remove,react-router-dom@6.x,Lazy loading + guards + navigation
+chart.js,^3.7.0,Third-party (keep),Keep,chart.js@^3.7.0 + react-chartjs-2@5.x,Framework-agnostic — keep same version. Note: HSBC Loans uses custom SVG for donut chart (not chart.js directly in calculator)
+ng2-charts,^3.1.0,Angular Wrapper,Remove,react-chartjs-2@5.x,Angular wrapper for chart.js — replaced with React wrapper
+rxjs,~7.5.0,Angular Core,Remove,N/A (hooks/TanStack Query),BehaviorSubject → useState/Context. Observable → useQuery. forkJoin → parallel useQuery
+tslib,^2.3.0,Shared Utility,Keep,tslib@^2.3.0,TypeScript runtime helpers — shared
+zone.js,~0.11.4,Angular Core,Remove,N/A,Change detection — React doesn't need this
+@angular-devkit/build-angular,13.3.10,Angular Build,Remove,vite@5.x,Build tooling replacement
+@angular/cli,13.3.10,Angular Build,Remove,N/A,CLI replaced by Vite/npm scripts
+@angular/compiler-cli,13.3.11,Angular Build,Remove,N/A,AOT compiler — not needed in React
+@types/jasmine,~3.10.0,Angular Test,Remove,N/A,Test types replaced by Vitest types
+jasmine-core,~4.0.0,Angular Test,Remove,N/A,Test runner replaced by Vitest
+karma,~6.3.0,Angular Test,Remove,vitest@1.x,Test runner replacement
+karma-chrome-launcher,~3.1.0,Angular Test,Remove,N/A,Browser launcher — Vitest uses jsdom/happy-dom
+karma-coverage,~2.1.0,Angular Test,Remove,@vitest/coverage-v8,Coverage tooling replacement
+karma-jasmine,~4.0.0,Angular Test,Remove,N/A,Test adapter — not needed
+karma-jasmine-html-reporter,~1.7.0,Angular Test,Remove,@vitest/ui,Test reporter replacement
+typescript,~4.6.2,Shared,Upgrade,typescript@~5.x,Upgrade to latest TS 5 for React project

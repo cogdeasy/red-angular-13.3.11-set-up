@@ -1,0 +1,220 @@
+name: "Workflow 3 — Migrate Route"
+description: >
+  Migrate a single Angular route/page to React. This workflow is repeatable —
+  run once per route in the order defined by the migration plan waves.
+
+phase: "2-4 — Migration Waves"
+duration: "1-5 days per route (depends on complexity)"
+repeat: true
+
+inputs:
+  route_path: "(e.g., /login, /dashboard)"
+  angular_component: "(e.g., LoginComponent)"
+  angular_module: "(e.g., LoginModule)"
+  angular_services: "(e.g., [AuthService])"
+  route_guards: "(e.g., [AuthGuard] or none)"
+  existing_e2e_tests: "(e.g., login.spec.ts or none)"
+  complexity_score: "(1-5 from component inventory)"
+  migration_wave: "(1-5)"
+
+outputs:
+  - react_component: "src/pages/{ComponentName}.tsx"
+  - react_hooks: "src/hooks/use{Feature}.ts (if needed)"
+  - unit_tests: "src/pages/__tests__/{ComponentName}.test.tsx"
+  - e2e_tests: "e2e/{route}.spec.ts"
+  - visual_snapshot: "Chromatic/Percy baseline"
+  - migration_log: "Entry in docs/migration-tracker.md"
+
+steps:
+  - id: analyze-angular
+    name: "Analyze Angular Component"
+    description: >
+      Read the Angular component, template, styles, and module. Document:
+      - All inputs/outputs
+      - Injected services and their usage
+      - Template directives (*ngIf, *ngFor, [ngClass], [(ngModel)], [formGroup])
+      - RxJS subscriptions
+      - Lifecycle hooks
+      - Event handlers
+    acceptance_criteria:
+      - Complete mapping document produced
+      - All Angular patterns identified with React equivalents
+
+  - id: create-types
+    name: "Create/Verify TypeScript Types"
+    description: >
+      Ensure all TypeScript interfaces/enums used by this component
+      exist in the shared types package.
+    acceptance_criteria:
+      - All types available in packages/shared-types/
+      - No type duplication between Angular and React
+
+  - id: create-hooks
+    name: "Create Custom Hooks"
+    description: >
+      Translate Angular service methods used by this component into React hooks.
+    angular_to_react_mapping:
+      "this.authService.login(email, password).subscribe()": "const { mutate: login } = useLoginMutation()"
+      "this.authService.isAuthenticated$.subscribe()": "const { isAuthenticated } = useAuth()"
+      "this.loanService.getLoans().subscribe()": "const { data: loans } = useLoans()"
+      "this.loanService.getDashboardStats().subscribe()": "const { data: stats } = useDashboardStats()"
+      "forkJoin([...]).subscribe()": "Multiple useQuery hooks (parallel by default)"
+      "this.notificationService.addNotification()": "useNotificationStore().addNotification()"
+      "FormBuilder.group({...})": "useForm<T>({ resolver: zodResolver(schema) })"
+    acceptance_criteria:
+      - Every Angular service method has a React hook equivalent
+      - Hooks handle loading, error, and success states
+      - No direct RxJS in React code
+
+  - id: build-component
+    name: "Build React Component"
+    description: >
+      Create the React component that replicates the Angular component's functionality.
+    translation_patterns:
+      "*ngIf='condition'": "{condition && <Element />}"
+      "*ngFor='let item of items'": "{items.map(item => <Element key={item.id} />)}"
+      "[ngClass]='getStatusClass(status)'": "className={getStatusClass(status)}"
+      "[(ngModel)]='value'": "value={value} onChange={e => setValue(e.target.value)}"
+      "[formGroup]='form'": "<form onSubmit={handleSubmit(onSubmit)}>"
+      "formControlName='field'": "{...register('field')}"
+      "(click)='handler()'": "onClick={handler}"
+      "(ngSubmit)='submit()'": "onSubmit={handleSubmit(onSubmit)}"
+      "{{ value | currencyFormat }}": "{formatCurrency(value)}"
+      "{{ value | date:'format' }}": "{new Intl.DateTimeFormat(...).format(value)}"
+      "routerLink='/path'": "<Link to='/path'>"
+      "[routerLink]='path'": "<Link to={path}>"
+      "mat-icon": "Material icon via @mui/icons-material or react-icons"
+    acceptance_criteria:
+      - Component renders identically to Angular version
+      - All interactive behavior preserved
+      - Accessibility attributes maintained
+      - Responsive behavior maintained
+
+  - id: migrate-styles
+    name: "Migrate Component Styles"
+    description: >
+      Convert component SCSS to CSS Modules or co-located styles using CSS custom properties.
+    acceptance_criteria:
+      - Visual output matches Angular version pixel-for-pixel
+      - HSBC design tokens used (CSS custom properties)
+      - No hardcoded colors or spacing values
+      - Responsive breakpoints preserved
+
+  - id: write-unit-tests
+    name: "Write Unit Tests"
+    description: >
+      Write Vitest + React Testing Library tests covering the same scenarios
+      as the Angular component's spec file (if one exists).
+    test_patterns:
+      - "renders without crashing"
+      - "displays correct data when loaded"
+      - "handles loading state"
+      - "handles error state"
+      - "form validation works correctly (if applicable)"
+      - "navigation works correctly"
+      - "user interactions trigger correct behavior"
+    acceptance_criteria:
+      - Coverage >= Angular baseline for this component
+      - All user interactions tested
+      - All edge cases covered
+      - Tests pass in CI
+
+  - id: write-e2e-tests
+    name: "Write E2E Parity Tests"
+    description: >
+      Write Playwright E2E tests that can run against both the Angular and React versions.
+    acceptance_criteria:
+      - Same test file runs against both Angular (port 4200) and React (port 5173)
+      - All critical user journeys covered
+      - Visual snapshots captured
+      - Tests pass in CI
+
+  - id: visual-regression
+    name: "Capture Visual Regression Baseline"
+    description: >
+      Take screenshots of the React component and compare against Angular version.
+    viewports:
+      - { width: 1920, height: 1080, name: "desktop" }
+      - { width: 768, height: 1024, name: "tablet" }
+      - { width: 375, height: 812, name: "mobile" }
+    acceptance_criteria:
+      - Zero visual diff at all viewports
+      - Or documented and approved intentional differences
+
+  - id: accessibility-audit
+    name: "Accessibility Audit"
+    description: >
+      Run axe-core against the React component.
+    acceptance_criteria:
+      - Zero critical violations
+      - Zero serious violations
+      - All interactive elements keyboard accessible
+      - Proper ARIA labels and roles
+
+  - id: performance-check
+    name: "Performance Check"
+    description: >
+      Verify the React component meets performance budgets.
+    acceptance_criteria:
+      - Component render time within budget
+      - No unnecessary re-renders
+      - Lazy loading working correctly
+      - Bundle contribution documented
+
+  - id: feature-flag
+    name: "Wire Feature Flag"
+    description: >
+      Enable the React version behind a feature flag so it can be gradually rolled out.
+    flag_name: "ff_react_{route_name}"
+    acceptance_criteria:
+      - Feature flag toggles between Angular and React for this route
+      - Default is Angular (flag off)
+      - Flag can be toggled without deployment
+
+  - id: update-tracker
+    name: "Update Migration Tracker"
+    description: >
+      Update docs/migration-tracker.md with completion status for this route.
+    acceptance_criteria:
+      - Route marked as migrated in tracker
+      - All checklist items verified
+      - PR reference linked
+      - Screenshots attached
+
+  - id: create-pr
+    name: "Create Migration PR"
+    description: >
+      Create a PR with all changes for this route migration.
+    pr_template: |
+      ## Route Migration: {route_path}
+
+      **Angular Component**: {angular_component}
+      **React Component**: {react_component}
+      **Wave**: {migration_wave}
+      **Complexity**: {complexity_score}/5
+
+      ### Changes
+      - [ ] React component created
+      - [ ] Custom hooks created
+      - [ ] Styles migrated
+      - [ ] Unit tests written (coverage: XX%)
+      - [ ] E2E parity tests written
+      - [ ] Visual regression baseline captured
+      - [ ] Accessibility audit passed
+      - [ ] Performance check passed
+      - [ ] Feature flag configured
+      - [ ] Migration tracker updated
+
+      ### Screenshots
+      | Angular | React |
+      |---------|-------|
+      | ![angular](screenshot-angular.png) | ![react](screenshot-react.png) |
+
+      ### Bundle Impact
+      - Before: XX KB
+      - After: XX KB
+      - Delta: +/- XX KB
+    acceptance_criteria:
+      - PR passes all CI checks
+      - Code review approved
+      - No regressions in existing functionality
