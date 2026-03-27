@@ -1,3 +1,8 @@
+---
+trigger: always_on
+description: Architecture rules for Angular/React coexistence via single-spa during the HSBC Loans Portal migration. Covers route ownership, shared auth contract, CSS variables, and framework isolation.
+---
+
 # Coexistence Rules — HSBC Loans Portal
 
 ## Architecture Overview
