@@ -1,3 +1,8 @@
+---
+trigger: always_on
+description: Concrete Angular 13 to React 18 translation patterns with HSBC Loans Portal code examples. Covers components, services/hooks, data fetching, forms, directives/JSX, pipes, route guards, state management, and Material UI replacements.
+---
+
 # Migration Patterns — Angular 13 to React 18
 
 ## HSBC Loans Portal Specific Mappings

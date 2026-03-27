@@ -1,3 +1,8 @@
+---
+trigger: always_on
+description: Testing pyramid, patterns, performance budgets, and CI integration rules for the HSBC Loans Portal Angular-to-React migration. Covers unit tests (Vitest), integration tests (RTL), E2E parity tests (Playwright), visual regression, and accessibility.
+---
+
 # Testing Rules — HSBC Loans Portal Migration
 
 ## Testing Pyramid

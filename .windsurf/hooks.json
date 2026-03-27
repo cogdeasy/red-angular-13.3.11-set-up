@@ -1,0 +1,24 @@
+{
+  "hooks": [
+    {
+      "id": "pre-commit-migration-check",
+      "type": "pre_commit",
+      "command": "echo 'Migration commit check: verifying no Angular source modifications...' && git diff --cached --name-only | grep -q '^src/app/' && echo 'ERROR: Angular source files are READ-ONLY during migration. Do not modify files in src/app/.' && exit 1 || echo 'OK: No Angular source files modified.'",
+      "description": "Prevents accidental modifications to Angular source files during migration"
+    },
+    {
+      "id": "post-save-typecheck",
+      "type": "post_save",
+      "command": "npx tsc --noEmit --pretty 2>&1 | head -20",
+      "description": "Run TypeScript type checking after saving files",
+      "globs": ["**/*.ts", "**/*.tsx"]
+    },
+    {
+      "id": "post-save-lint",
+      "type": "post_save",
+      "command": "npx eslint --max-warnings 0 ${file}",
+      "description": "Run ESLint on saved TypeScript/React files",
+      "globs": ["**/*.ts", "**/*.tsx"]
+    }
+  ]
+}
