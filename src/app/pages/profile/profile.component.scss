@@ -1,0 +1,258 @@
+$hsbc-red: #DB0011;
+$hsbc-success: #00847F;
+$hsbc-info: #0073CF;
+$hsbc-black: #333333;
+$hsbc-dark-gray: #575757;
+$hsbc-medium-gray: #767676;
+$hsbc-light-gray: #D7D8D6;
+$hsbc-pale-gray: #F3F3F3;
+$hsbc-white: #FFFFFF;
+
+.profile-page {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.page-header {
+  margin-bottom: 24px;
+  h1 { font-size: 1.8rem; font-weight: 300; margin-bottom: 4px; }
+  p { color: $hsbc-medium-gray; margin: 0; }
+}
+
+.profile-layout {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+// Profile Card
+.profile-card {
+  text-align: center;
+  padding: 32px 24px;
+}
+
+.profile-header {
+  margin-bottom: 24px;
+
+  .avatar-large {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: $hsbc-red;
+    color: $hsbc-white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: 500;
+    margin: 0 auto 16px;
+  }
+
+  h2 {
+    font-size: 1.3rem;
+    font-weight: 500;
+    margin-bottom: 8px;
+  }
+
+  .customer-since {
+    font-size: 0.8rem;
+    color: $hsbc-medium-gray;
+    margin-top: 8px;
+  }
+}
+
+.profile-stats {
+  border-top: 1px solid $hsbc-light-gray;
+  padding-top: 16px;
+
+  .profile-stat {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid $hsbc-pale-gray;
+
+    &:last-child { border-bottom: none; }
+
+    .stat-label {
+      font-size: 0.8rem;
+      color: $hsbc-medium-gray;
+    }
+
+    .stat-value {
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: $hsbc-black;
+      text-align: right;
+    }
+  }
+}
+
+// Details
+.details-section {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+.info-item {
+  .info-label {
+    display: block;
+    font-size: 0.8rem;
+    color: $hsbc-medium-gray;
+    margin-bottom: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+
+  .info-value {
+    font-size: 0.95rem;
+    color: $hsbc-black;
+  }
+}
+
+// Edit Form
+.edit-form {
+  .form-row {
+    display: flex;
+    gap: 20px;
+
+    .form-group {
+      flex: 1;
+      &.col-6 { flex: 0 0 calc(50% - 10px); }
+    }
+  }
+
+  .form-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 8px;
+  }
+}
+
+// Security
+.security-items {
+  display: flex;
+  flex-direction: column;
+}
+
+.security-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 0;
+  border-bottom: 1px solid $hsbc-pale-gray;
+
+  &:last-child { border-bottom: none; }
+
+  .security-info {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+
+    mat-icon {
+      color: $hsbc-medium-gray;
+      font-size: 24px;
+    }
+
+    strong {
+      display: block;
+      font-size: 0.9rem;
+      margin-bottom: 2px;
+    }
+
+    p {
+      font-size: 0.8rem;
+      color: $hsbc-medium-gray;
+      margin: 0;
+    }
+  }
+}
+
+// Preferences
+.pref-items {
+  display: flex;
+  flex-direction: column;
+}
+
+.pref-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 0;
+  border-bottom: 1px solid $hsbc-pale-gray;
+
+  &:last-child { border-bottom: none; }
+
+  strong {
+    display: block;
+    font-size: 0.9rem;
+    margin-bottom: 4px;
+  }
+
+  p {
+    font-size: 0.8rem;
+    color: $hsbc-medium-gray;
+    margin: 0;
+  }
+}
+
+// Toggle Switch
+.toggle {
+  position: relative;
+  display: inline-block;
+  width: 48px;
+  height: 26px;
+  flex-shrink: 0;
+
+  input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+
+  .toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: $hsbc-light-gray;
+    border-radius: 26px;
+    transition: 0.3s;
+
+    &::before {
+      position: absolute;
+      content: '';
+      height: 20px;
+      width: 20px;
+      left: 3px;
+      bottom: 3px;
+      background-color: $hsbc-white;
+      border-radius: 50%;
+      transition: 0.3s;
+    }
+  }
+
+  input:checked + .toggle-slider {
+    background-color: $hsbc-success;
+  }
+
+  input:checked + .toggle-slider::before {
+    transform: translateX(22px);
+  }
+}
+
+@media (max-width: 768px) {
+  .profile-layout { grid-template-columns: 1fr; }
+  .info-grid { grid-template-columns: 1fr; }
+  .edit-form .form-row { flex-direction: column; gap: 0; }
+  .edit-form .form-row .form-group.col-6 { flex: 1; }
+}

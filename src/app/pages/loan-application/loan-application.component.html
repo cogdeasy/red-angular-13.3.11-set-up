@@ -1,0 +1,399 @@
+<div class="loan-application-page fade-in">
+  <!-- Success State -->
+  <div *ngIf="isSubmitted" class="success-container">
+    <div class="card success-card">
+      <div class="success-icon-wrap">
+        <mat-icon>check_circle</mat-icon>
+      </div>
+      <h2>Application Submitted!</h2>
+      <p>Your loan application has been submitted successfully.</p>
+      <div class="success-details">
+        <div class="detail-row">
+          <span class="detail-label">Application ID</span>
+          <span class="detail-value">{{ submittedLoanId }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Type</span>
+          <span class="detail-value">{{ loanDetailsForm.get('loanType')?.value }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Amount</span>
+          <span class="detail-value">{{ formatCurrency(loanDetailsForm.get('amount')?.value) }}</span>
+        </div>
+      </div>
+      <p class="success-note">We'll review your application and get back to you within 2-3 business days.</p>
+      <div class="success-actions">
+        <button class="btn btn-primary" (click)="goToDashboard()">Go to Dashboard</button>
+        <button class="btn btn-secondary" (click)="goToStatus()">Track Application</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Application Form -->
+  <div *ngIf="!isSubmitted">
+    <div class="page-header">
+      <h1>Apply for a Loan</h1>
+      <p>Complete the form below to submit your loan application.</p>
+    </div>
+
+    <!-- Stepper -->
+    <div class="stepper-container">
+      <div class="stepper">
+        <div *ngFor="let step of steps; let i = index" class="stepper-step"
+             [class.active]="currentStep === step.number"
+             [class.completed]="currentStep > step.number || isStepComplete(step.number)"
+             (click)="goToStep(step.number)">
+          <div class="stepper-step-circle">
+            <mat-icon *ngIf="currentStep > step.number || isStepComplete(step.number)">check</mat-icon>
+            <span *ngIf="currentStep <= step.number && !isStepComplete(step.number)">{{ step.number }}</span>
+          </div>
+          <span class="stepper-step-label">{{ step.label }}</span>
+          <div class="stepper-step-connector" *ngIf="i < steps.length - 1"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 1: Personal Details -->
+    <div class="card form-card" *ngIf="currentStep === 1">
+      <div class="card-header">
+        <h3>Personal Information</h3>
+        <p class="text-muted text-sm">Please provide your personal details as they appear on your identification.</p>
+      </div>
+
+      <form [formGroup]="personalInfoForm">
+        <div class="form-row">
+          <div class="form-group col-3">
+            <label>Title *</label>
+            <select class="form-control" formControlName="title"
+                    [class.is-invalid]="personalInfoForm.get('title')?.touched && personalInfoForm.get('title')?.invalid">
+              <option value="">Select</option>
+              <option *ngFor="let t of titles" [value]="t">{{ t }}</option>
+            </select>
+            <span class="form-error" *ngIf="getFieldError(personalInfoForm, 'title')">{{ getFieldError(personalInfoForm, 'title') }}</span>
+          </div>
+          <div class="form-group col-4">
+            <label>First Name *</label>
+            <input type="text" class="form-control" formControlName="firstName" placeholder="Enter first name"
+                   [class.is-invalid]="personalInfoForm.get('firstName')?.touched && personalInfoForm.get('firstName')?.invalid">
+            <span class="form-error" *ngIf="getFieldError(personalInfoForm, 'firstName')">{{ getFieldError(personalInfoForm, 'firstName') }}</span>
+          </div>
+          <div class="form-group col-5">
+            <label>Last Name *</label>
+            <input type="text" class="form-control" formControlName="lastName" placeholder="Enter last name"
+                   [class.is-invalid]="personalInfoForm.get('lastName')?.touched && personalInfoForm.get('lastName')?.invalid">
+            <span class="form-error" *ngIf="getFieldError(personalInfoForm, 'lastName')">{{ getFieldError(personalInfoForm, 'lastName') }}</span>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group col-6">
+            <label>Date of Birth *</label>
+            <input type="date" class="form-control" formControlName="dateOfBirth"
+                   [class.is-invalid]="personalInfoForm.get('dateOfBirth')?.touched && personalInfoForm.get('dateOfBirth')?.invalid">
+            <span class="form-error" *ngIf="getFieldError(personalInfoForm, 'dateOfBirth')">{{ getFieldError(personalInfoForm, 'dateOfBirth') }}</span>
+          </div>
+          <div class="form-group col-6">
+            <label>National ID / Passport *</label>
+            <input type="text" class="form-control" formControlName="nationalId" placeholder="Enter ID number"
+                   [class.is-invalid]="personalInfoForm.get('nationalId')?.touched && personalInfoForm.get('nationalId')?.invalid">
+            <span class="form-error" *ngIf="getFieldError(personalInfoForm, 'nationalId')">{{ getFieldError(personalInfoForm, 'nationalId') }}</span>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group col-6">
+            <label>Email Address *</label>
+            <input type="email" class="form-control" formControlName="email" placeholder="Enter email"
+                   [class.is-invalid]="personalInfoForm.get('email')?.touched && personalInfoForm.get('email')?.invalid">
+            <span class="form-error" *ngIf="getFieldError(personalInfoForm, 'email')">{{ getFieldError(personalInfoForm, 'email') }}</span>
+          </div>
+          <div class="form-group col-6">
+            <label>Phone Number *</label>
+            <input type="tel" class="form-control" formControlName="phone" placeholder="+44 7700 900123"
+                   [class.is-invalid]="personalInfoForm.get('phone')?.touched && personalInfoForm.get('phone')?.invalid">
+            <span class="form-error" *ngIf="getFieldError(personalInfoForm, 'phone')">{{ getFieldError(personalInfoForm, 'phone') }}</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Address *</label>
+          <input type="text" class="form-control" formControlName="address" placeholder="Street address"
+                 [class.is-invalid]="personalInfoForm.get('address')?.touched && personalInfoForm.get('address')?.invalid">
+          <span class="form-error" *ngIf="getFieldError(personalInfoForm, 'address')">{{ getFieldError(personalInfoForm, 'address') }}</span>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group col-4">
+            <label>City *</label>
+            <input type="text" class="form-control" formControlName="city" placeholder="City"
+                   [class.is-invalid]="personalInfoForm.get('city')?.touched && personalInfoForm.get('city')?.invalid">
+          </div>
+          <div class="form-group col-4">
+            <label>Postcode *</label>
+            <input type="text" class="form-control" formControlName="postcode" placeholder="Postcode"
+                   [class.is-invalid]="personalInfoForm.get('postcode')?.touched && personalInfoForm.get('postcode')?.invalid">
+          </div>
+          <div class="form-group col-4">
+            <label>Country *</label>
+            <select class="form-control" formControlName="country">
+              <option value="">Select country</option>
+              <option *ngFor="let c of countries" [value]="c">{{ c }}</option>
+            </select>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <!-- Step 2: Employment -->
+    <div class="card form-card" *ngIf="currentStep === 2">
+      <div class="card-header">
+        <h3>Employment & Income</h3>
+        <p class="text-muted text-sm">Provide your employment and income details for assessment.</p>
+      </div>
+
+      <form [formGroup]="employmentForm">
+        <div class="form-row">
+          <div class="form-group col-6">
+            <label>Employment Status *</label>
+            <select class="form-control" formControlName="employmentStatus"
+                    [class.is-invalid]="employmentForm.get('employmentStatus')?.touched && employmentForm.get('employmentStatus')?.invalid">
+              <option value="">Select status</option>
+              <option *ngFor="let s of employmentStatuses" [value]="s">{{ s }}</option>
+            </select>
+            <span class="form-error" *ngIf="getFieldError(employmentForm, 'employmentStatus')">{{ getFieldError(employmentForm, 'employmentStatus') }}</span>
+          </div>
+          <div class="form-group col-6">
+            <label>Years at Current Employer *</label>
+            <input type="number" class="form-control" formControlName="yearsEmployed" placeholder="0"
+                   [class.is-invalid]="employmentForm.get('yearsEmployed')?.touched && employmentForm.get('yearsEmployed')?.invalid">
+            <span class="form-error" *ngIf="getFieldError(employmentForm, 'yearsEmployed')">{{ getFieldError(employmentForm, 'yearsEmployed') }}</span>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group col-6">
+            <label>Employer Name *</label>
+            <input type="text" class="form-control" formControlName="employerName" placeholder="Company name"
+                   [class.is-invalid]="employmentForm.get('employerName')?.touched && employmentForm.get('employerName')?.invalid">
+          </div>
+          <div class="form-group col-6">
+            <label>Job Title *</label>
+            <input type="text" class="form-control" formControlName="jobTitle" placeholder="Your role"
+                   [class.is-invalid]="employmentForm.get('jobTitle')?.touched && employmentForm.get('jobTitle')?.invalid">
+          </div>
+        </div>
+
+        <div class="section-divider">
+          <span>Income Details</span>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group col-4">
+            <label>Monthly Income (Gross) *</label>
+            <input type="number" class="form-control" formControlName="monthlyIncome" placeholder="0.00"
+                   [class.is-invalid]="employmentForm.get('monthlyIncome')?.touched && employmentForm.get('monthlyIncome')?.invalid">
+            <span class="form-hint">Before tax</span>
+          </div>
+          <div class="form-group col-4">
+            <label>Additional Income</label>
+            <input type="number" class="form-control" formControlName="additionalIncome" placeholder="0.00">
+            <span class="form-hint">Rental, investment, etc.</span>
+          </div>
+          <div class="form-group col-4">
+            <label>Monthly Expenses *</label>
+            <input type="number" class="form-control" formControlName="monthlyExpenses" placeholder="0.00"
+                   [class.is-invalid]="employmentForm.get('monthlyExpenses')?.touched && employmentForm.get('monthlyExpenses')?.invalid">
+            <span class="form-hint">Total regular outgoings</span>
+          </div>
+        </div>
+
+        <div class="income-summary card" *ngIf="employmentForm.get('monthlyIncome')?.value > 0">
+          <h4>Income Summary</h4>
+          <div class="summary-row">
+            <span>Total Monthly Income</span>
+            <strong>{{ formatCurrency((employmentForm.get('monthlyIncome')?.value || 0) + (employmentForm.get('additionalIncome')?.value || 0)) }}</strong>
+          </div>
+          <div class="summary-row">
+            <span>Monthly Expenses</span>
+            <strong class="text-red">-{{ formatCurrency(employmentForm.get('monthlyExpenses')?.value || 0) }}</strong>
+          </div>
+          <div class="summary-row total">
+            <span>Disposable Income</span>
+            <strong class="text-success">{{ formatCurrency((employmentForm.get('monthlyIncome')?.value || 0) + (employmentForm.get('additionalIncome')?.value || 0) - (employmentForm.get('monthlyExpenses')?.value || 0)) }}</strong>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <!-- Step 3: Loan Details -->
+    <div class="card form-card" *ngIf="currentStep === 3">
+      <div class="card-header">
+        <h3>Loan Details</h3>
+        <p class="text-muted text-sm">Specify the type and amount of loan you'd like to apply for.</p>
+      </div>
+
+      <form [formGroup]="loanDetailsForm">
+        <div class="form-group">
+          <label>Loan Type *</label>
+          <div class="loan-type-grid">
+            <div *ngFor="let type of loanTypes" class="loan-type-option"
+                 [class.selected]="loanDetailsForm.get('loanType')?.value === type"
+                 (click)="loanDetailsForm.get('loanType')?.setValue(type)">
+              <mat-icon>{{ getLoanTypeIcon(type) }}</mat-icon>
+              <span>{{ type }}</span>
+            </div>
+          </div>
+          <span class="form-error" *ngIf="getFieldError(loanDetailsForm, 'loanType')">{{ getFieldError(loanDetailsForm, 'loanType') }}</span>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group col-6">
+            <label>Loan Amount ($) *</label>
+            <input type="number" class="form-control" formControlName="amount" placeholder="e.g. 50000"
+                   [class.is-invalid]="loanDetailsForm.get('amount')?.touched && loanDetailsForm.get('amount')?.invalid">
+            <span class="form-hint">Min: $1,000 - Max: $5,000,000</span>
+            <span class="form-error" *ngIf="getFieldError(loanDetailsForm, 'amount')">{{ getFieldError(loanDetailsForm, 'amount') }}</span>
+          </div>
+          <div class="form-group col-6">
+            <label>Loan Term (months) *</label>
+            <input type="number" class="form-control" formControlName="term" placeholder="e.g. 60"
+                   [class.is-invalid]="loanDetailsForm.get('term')?.touched && loanDetailsForm.get('term')?.invalid">
+            <span class="form-hint">Min: 6 months - Max: 360 months</span>
+            <span class="form-error" *ngIf="getFieldError(loanDetailsForm, 'term')">{{ getFieldError(loanDetailsForm, 'term') }}</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Purpose of Loan *</label>
+          <textarea class="form-control" formControlName="purpose" rows="3"
+                    placeholder="Describe the purpose of your loan..."
+                    [class.is-invalid]="loanDetailsForm.get('purpose')?.touched && loanDetailsForm.get('purpose')?.invalid"></textarea>
+          <span class="form-error" *ngIf="getFieldError(loanDetailsForm, 'purpose')">{{ getFieldError(loanDetailsForm, 'purpose') }}</span>
+        </div>
+
+        <div class="estimate-card card card-accent" *ngIf="getEstimatedMonthlyPayment() > 0">
+          <h4>Estimated Monthly Payment</h4>
+          <div class="estimate-amount">{{ formatCurrency(getEstimatedMonthlyPayment()) }}</div>
+          <p class="text-sm text-muted">Based on current representative rates. Actual rate may vary based on your creditworthiness.</p>
+        </div>
+      </form>
+    </div>
+
+    <!-- Step 4: Review -->
+    <div class="card form-card" *ngIf="currentStep === 4">
+      <div class="card-header">
+        <h3>Review Your Application</h3>
+        <p class="text-muted text-sm">Please verify all information before submitting.</p>
+      </div>
+
+      <div class="review-section">
+        <div class="review-header">
+          <h4>Personal Details</h4>
+          <button class="btn btn-text btn-sm" (click)="goToStep(1)">Edit</button>
+        </div>
+        <div class="review-grid">
+          <div class="review-item">
+            <span class="review-label">Name</span>
+            <span class="review-value">{{ personalInfoForm.get('title')?.value }} {{ personalInfoForm.get('firstName')?.value }} {{ personalInfoForm.get('lastName')?.value }}</span>
+          </div>
+          <div class="review-item">
+            <span class="review-label">Date of Birth</span>
+            <span class="review-value">{{ personalInfoForm.get('dateOfBirth')?.value }}</span>
+          </div>
+          <div class="review-item">
+            <span class="review-label">Email</span>
+            <span class="review-value">{{ personalInfoForm.get('email')?.value }}</span>
+          </div>
+          <div class="review-item">
+            <span class="review-label">Phone</span>
+            <span class="review-value">{{ personalInfoForm.get('phone')?.value }}</span>
+          </div>
+          <div class="review-item">
+            <span class="review-label">Address</span>
+            <span class="review-value">{{ personalInfoForm.get('address')?.value }}, {{ personalInfoForm.get('city')?.value }}, {{ personalInfoForm.get('postcode')?.value }}</span>
+          </div>
+          <div class="review-item">
+            <span class="review-label">Country</span>
+            <span class="review-value">{{ personalInfoForm.get('country')?.value }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="review-section">
+        <div class="review-header">
+          <h4>Employment & Income</h4>
+          <button class="btn btn-text btn-sm" (click)="goToStep(2)">Edit</button>
+        </div>
+        <div class="review-grid">
+          <div class="review-item">
+            <span class="review-label">Employment Status</span>
+            <span class="review-value">{{ employmentForm.get('employmentStatus')?.value }}</span>
+          </div>
+          <div class="review-item">
+            <span class="review-label">Employer</span>
+            <span class="review-value">{{ employmentForm.get('employerName')?.value }}</span>
+          </div>
+          <div class="review-item">
+            <span class="review-label">Job Title</span>
+            <span class="review-value">{{ employmentForm.get('jobTitle')?.value }}</span>
+          </div>
+          <div class="review-item">
+            <span class="review-label">Monthly Income</span>
+            <span class="review-value">{{ formatCurrency(employmentForm.get('monthlyIncome')?.value) }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="review-section">
+        <div class="review-header">
+          <h4>Loan Details</h4>
+          <button class="btn btn-text btn-sm" (click)="goToStep(3)">Edit</button>
+        </div>
+        <div class="review-grid">
+          <div class="review-item">
+            <span class="review-label">Loan Type</span>
+            <span class="review-value">{{ loanDetailsForm.get('loanType')?.value }}</span>
+          </div>
+          <div class="review-item">
+            <span class="review-label">Amount</span>
+            <span class="review-value">{{ formatCurrency(loanDetailsForm.get('amount')?.value) }}</span>
+          </div>
+          <div class="review-item">
+            <span class="review-label">Term</span>
+            <span class="review-value">{{ loanDetailsForm.get('term')?.value }} months</span>
+          </div>
+          <div class="review-item">
+            <span class="review-label">Estimated Monthly Payment</span>
+            <span class="review-value text-red text-bold">{{ formatCurrency(getEstimatedMonthlyPayment()) }}</span>
+          </div>
+          <div class="review-item full-width">
+            <span class="review-label">Purpose</span>
+            <span class="review-value">{{ loanDetailsForm.get('purpose')?.value }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="terms-section">
+        <label class="checkbox-label">
+          <input type="checkbox" [(ngModel)]="termsAccepted" [ngModelOptions]="{standalone: true}">
+          <span>I confirm that all information provided is accurate and I agree to HSBC's <a href="#">Terms & Conditions</a> and <a href="#">Privacy Policy</a>.</span>
+        </label>
+      </div>
+    </div>
+
+    <!-- Form Actions -->
+    <div class="form-actions">
+      <button class="btn btn-outline" *ngIf="currentStep > 1" (click)="previousStep()">
+        <mat-icon>chevron_left</mat-icon> Previous
+      </button>
+      <div class="spacer"></div>
+      <button class="btn btn-primary" *ngIf="currentStep < 4" (click)="nextStep()">
+        Next <mat-icon>chevron_right</mat-icon>
+      </button>
+      <button class="btn btn-primary btn-lg" *ngIf="currentStep === 4" (click)="submitApplication()" [disabled]="isSubmitting || !termsAccepted">
+        <span *ngIf="!isSubmitting">Submit Application</span>
+        <span *ngIf="isSubmitting">Submitting...</span>
+      </button>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,145 @@
+$hsbc-red: #DB0011;
+$hsbc-red-dark: #AF000D;
+$hsbc-white: #FFFFFF;
+$hsbc-black: #333333;
+$hsbc-dark-gray: #575757;
+$hsbc-light-gray: #D7D8D6;
+$hsbc-pale-gray: #F3F3F3;
+
+.sidebar {
+  width: 260px;
+  height: calc(100vh - 64px);
+  background: $hsbc-white;
+  border-right: 1px solid $hsbc-light-gray;
+  position: fixed;
+  top: 64px;
+  left: 0;
+  z-index: 999;
+  display: flex;
+  flex-direction: column;
+  transition: width 0.3s ease;
+  overflow: hidden;
+
+  &.collapsed {
+    width: 72px;
+
+    .nav-label, .nav-badge { display: none; }
+    .nav-link { justify-content: center; padding: 14px; }
+    .sidebar-footer { display: none; }
+  }
+}
+
+.sidebar-content {
+  flex: 1;
+  padding: 16px 0;
+  overflow-y: auto;
+}
+
+.nav-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.nav-item {
+  margin: 2px 12px;
+
+  &.active .nav-link {
+    background: rgba($hsbc-red, 0.08);
+    color: $hsbc-red;
+    border-left: 3px solid $hsbc-red;
+
+    .nav-icon { color: $hsbc-red; }
+  }
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 20px;
+  color: $hsbc-dark-gray;
+  text-decoration: none;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  border-left: 3px solid transparent;
+
+  &:hover {
+    background: $hsbc-pale-gray;
+    color: $hsbc-black;
+    text-decoration: none;
+  }
+
+  .nav-icon {
+    font-size: 22px;
+    color: $hsbc-dark-gray;
+  }
+
+  .nav-label {
+    font-size: 0.9rem;
+    font-weight: 400;
+    white-space: nowrap;
+  }
+
+  .nav-badge {
+    margin-left: auto;
+    background: $hsbc-red;
+    color: $hsbc-white;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.7rem;
+    font-weight: 500;
+  }
+}
+
+.sidebar-footer {
+  padding: 16px;
+  border-top: 1px solid $hsbc-light-gray;
+
+  .help-card {
+    background: $hsbc-pale-gray;
+    border-radius: 8px;
+    padding: 16px;
+    text-align: center;
+
+    mat-icon {
+      color: $hsbc-red;
+      font-size: 28px;
+      height: 28px;
+      width: 28px;
+      margin-bottom: 8px;
+    }
+
+    .help-text {
+      strong {
+        font-size: 0.85rem;
+        display: block;
+        margin-bottom: 4px;
+      }
+
+      p {
+        font-size: 0.75rem;
+        color: $hsbc-dark-gray;
+        margin: 0 0 8px;
+      }
+    }
+
+    .help-link {
+      color: $hsbc-red;
+      font-weight: 500;
+      font-size: 0.85rem;
+      text-decoration: none;
+
+      &:hover { text-decoration: underline; }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    width: 72px;
+    .nav-label, .nav-badge { display: none; }
+    .nav-link { justify-content: center; padding: 14px; }
+    .sidebar-footer { display: none; }
+  }
+}

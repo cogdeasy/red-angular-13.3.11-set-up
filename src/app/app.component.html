@@ -1,0 +1,21 @@
+<!-- Login Page (no chrome) -->
+<div *ngIf="isLoginPage">
+  <router-outlet></router-outlet>
+</div>
+
+<!-- Authenticated Layout -->
+<div *ngIf="!isLoginPage && isAuthenticated" class="app-layout">
+  <app-header (toggleSidebar)="toggleSidebar()"></app-header>
+  <app-sidebar [isCollapsed]="sidebarCollapsed"></app-sidebar>
+  <main class="main-content" [class.sidebar-collapsed]="sidebarCollapsed">
+    <div class="page-wrapper">
+      <router-outlet></router-outlet>
+    </div>
+    <app-footer></app-footer>
+  </main>
+</div>
+
+<!-- Redirect to login if not authenticated and not on login page -->
+<div *ngIf="!isLoginPage && !isAuthenticated">
+  <router-outlet></router-outlet>
+</div>
